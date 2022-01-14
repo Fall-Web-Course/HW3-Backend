@@ -8,9 +8,8 @@ import (
 
 type Note struct {
 	gorm.Model
-	ID			int 		`grom:"primaryKey"`
-	UserRefer	int
-	User		users.User	`gorm:"foreignKey:UserRefer"`
+	AuthorID	int
+	User		users.User	`gorm:"foreignKey:AuthorID"`
 	Text		string
 }
 

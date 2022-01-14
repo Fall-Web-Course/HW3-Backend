@@ -7,7 +7,7 @@ import (
 
 type User struct {
 	gorm.Model
-	ID			int 	`gorm:"primaryKey"`
+	id			int 	`gorm:"primaryKey"`
 	Username	string  `json:"username"`
 	Password	string  `json:"password"`
 	IsAdmin		bool    `json:"id_admin"`
