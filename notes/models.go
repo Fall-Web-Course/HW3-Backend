@@ -8,13 +8,13 @@ import (
 
 type Note struct {
 	gorm.Model
-	AuthorID	int
-	User		users.User	`gorm:"foreignKey:AuthorID"`
+	UserUsername	int
+	User		users.User	`gorm:"references:Username"`
 	Text		string
 }
 
 type NewNoteInput struct {
-	AuthorId	int		`json:"user_id"`
+	AuthorId	string		`json:"user_id"`
 	Text		string	`json:"text"`
 }
 
@@ -22,7 +22,7 @@ func InsertToDb(note Note) {
 	db.GetDb().Create(&note)
 }
 
-func GetUserByid(user_id int) users.User {
+func GetUserByid(user_id string) users.User {
 	var user users.User
 	db.GetDb().Find(&user, user_id)
 	return user
