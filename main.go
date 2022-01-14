@@ -4,41 +4,17 @@ import (
 	"fmt"
 
 	users "github.com/Fall-Web-Course/HW3/users"
+	notes "github.com/Fall-Web-Course/HW3/notes"
 	"github.com/gin-gonic/gin"
 )
-
-
-func new_note(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "new_note",
-	})
-}
-
-func get_note(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "get_note",
-	})
-}
-
-func update_note(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "update_note",
-	})
-}
-
-func delete_note(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "delete_note",
-	})
-}
 
 func init_router(LISTEN_ADDRESS string) {
 	router := gin.Default();
 
-	router.POST("/notes/new", new_note);
-	router.GET("/notes", get_note); // /note_id
-	router.PUT("/notes", update_note); // /note_id
-	router.DELETE("/notes", delete_note); // /note_id
+	router.POST("/notes/new", notes.NewNote);
+	router.GET("/notes", notes.GetNote); // /note_id
+	router.PUT("/notes", notes.UpdateNote); // /note_id
+	router.DELETE("/notes", notes.DeleteNote); // /note_id
 	
 	router.POST("/users/register", users.Register);	
 	router.POST("/users/login", users.Login);	
