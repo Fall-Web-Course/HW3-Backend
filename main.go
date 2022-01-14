@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
-
 	users "github.com/Fall-Web-Course/HW3/users"
 	notes "github.com/Fall-Web-Course/HW3/notes"
+
 	"github.com/gin-gonic/gin"
+
+	"fmt"
 )
 
 func init_router(LISTEN_ADDRESS string) {
