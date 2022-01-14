@@ -8,13 +8,13 @@ import (
 
 type Note struct {
 	gorm.Model
-	UserUsername	int
-	User		users.User	`gorm:"references:Username"`
-	Text		string
+	UserUsername	string
+	User			users.User	`gorm:"references:Username"`
+	Text			string
 }
 
 type NewNoteInput struct {
-	AuthorId	string		`json:"user_id"`
+	AuthorId	string	`json:"user_id"`
 	Text		string	`json:"text"`
 }
 
