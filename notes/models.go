@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Notes struct {
+type Note struct {
 	gorm.Model
 	AuthorRefer 	int
 	Author		string	`gorm:"foreignKey:UserRefer"`
