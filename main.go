@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"fmt"
 )
 
 
@@ -31,6 +32,8 @@ func delete_note(c *gin.Context) {
 
 
 func main() {
+	PORT := Getenv("PORT", "8080");	HOST_LAN_IP := Getenv("LAN_HOST_IP", "127.0.0.1");
+	LISTEN_ADDRESS := fmt.Sprintf("%s:%s", HOST_LAN_IP, PORT);
 
 	r := gin.Default();
 
@@ -44,5 +47,5 @@ func main() {
 	r.PUT("/notes", update_note); // /note_id
 	r.DELETE("/notes", delete_note); // /note_id
 
-	r.Run(); // Listens on 0.0.0.0:8080
+	r.Run(LISTEN_ADDRESS); // Listens on 0.0.0.0:8080
 }
