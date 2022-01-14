@@ -8,8 +8,8 @@ import (
 type Note struct {
 	gorm.Model
 	AuthorRefer 	int
-	Author		string	`gorm:"foreignKey:UserRefer"`
-	Text	string
+	Author			string	`gorm:"foreignKey:UserRefer"`
+	Text			string
 }
 
 func InsertToDb(note Note) {
