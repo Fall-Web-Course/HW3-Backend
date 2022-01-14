@@ -1,8 +1,8 @@
 package users
 
-import (
+import (	
 	"github.com/gin-gonic/gin"
-	
+
 	"errors"
 	"strings"
 
@@ -96,6 +96,7 @@ func Register(c *gin.Context) {
     var sameSiteCookie http.SameSite;
 
 	if _, err := registerNewUser(new_user.Username, new_user.Password); err == nil {
+		InsertToDb(new_user)
 		// If the user is created, set the token in a cookie and log the user in
 		token := generateSessionToken()
 		c.SetCookie("token", token, 3600, "/", "", false, true)
