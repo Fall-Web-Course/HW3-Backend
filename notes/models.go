@@ -8,7 +8,7 @@ import (
 type Note struct {
 	gorm.Model
 	AuthorRefer 	int
-	Author			string	`gorm:"foreignKey:UserRefer"`
+	Author			string	`gorm:"foreignKey:AuthorRefer"`
 	Text			string
 }
 
