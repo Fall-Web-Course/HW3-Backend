@@ -96,7 +96,12 @@ func Register(c *gin.Context) {
     var sameSiteCookie http.SameSite;
 
 	if _, err := registerNewUser(new_user.Username, new_user.Password); err == nil {
-		InsertToDb(new_user)
+		out := InsertToDb(new_user)
+		if out != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Message":   "Registration Failed",
+				"ErrorMessage": "Duplicate username"})
+		}
 		// If the user is created, set the token in a cookie and log the user in
 		token := generateSessionToken()
 		c.SetCookie("token", token, 3600, "/", "", false, true)

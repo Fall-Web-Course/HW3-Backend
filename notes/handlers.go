@@ -1,6 +1,8 @@
 package notes
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,10 +12,14 @@ func NewNote(c *gin.Context) {
 	c.BindJSON(&new_note)
 
 	user := GetUserByid(new_note.AuthorId)
-	InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
-
-	c.JSON(200, gin.H{
-		"message": "new_note",
+	err := InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
+	if (err != nil) {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"Message": "Something went wrong",
+		})
+	}
+	c.JSON(http.StatusCreated, gin.H {
+		"Message": "Note created",
 	})
 }
 

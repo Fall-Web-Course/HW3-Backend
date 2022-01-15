@@ -18,8 +18,9 @@ type NewNoteInput struct {
 	Text		string	`json:"text"`
 }
 
-func InsertToDb(note Note) {
-	db.GetDb().Create(&note)
+func InsertToDb(note Note) *gorm.DB {
+	err := db.GetDb().Create(&note)
+	return err
 }
 
 func GetUserByid(user_id string) users.User {

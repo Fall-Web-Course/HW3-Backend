@@ -12,6 +12,7 @@ type User struct {
 	IsAdmin		bool    `json:"id_admin"`
 }
 
-func InsertToDb(user User) {
-	db.GetDb().Create(&user)
+func InsertToDb(user User) *gorm.DB {
+	err := db.GetDb().Create(&user)
+	return err
 }
