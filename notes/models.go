@@ -23,8 +23,8 @@ func InsertToDb(note Note) *gorm.DB {
 	return err
 }
 
-func GetUserByid(user_id string) users.User {
-	var user users.User
-	db.GetDb().Find(&user, user_id)
-	return user
+func GetNoteByid(note_id string) Note {
+	var note Note
+	db.GetDb().Find(&note, note_id)
+	return note
 }
