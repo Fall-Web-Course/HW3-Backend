@@ -1,0 +1,50 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/Fall-Web-Course/HW3-cache/proto";
+//option java_multiple_files = true;
+//option java_package = "io.grpc.examples.helloworld";
+option java_outer_classname = "CacheProto";
+
+package proto;
+
+// The greeting service definition.
+service Cacher {
+  
+  rpc GetKey (Key) returns (Value) {}
+  
+  rpc SetKey (KeyPair) returns (KeyPair) {}
+
+  // rpc (google.protobuf.Empty) Clear () returns {}
+}
+
+// The request message containing the user's name.
+message Key {
+  int64 key = 1;
+}
+
+message Value {
+  string value = 1;
+}
+
+// The response message containing the greetings
+message KeyPair {
+  int64 key = 1;
+  string value = 2;
+}
+
+// message User {
+// 	string Username = "bahmani";
+// 	string Password	= "bahmani";
+// 	bool IsAdmin = True;
+// }
+// 
+// message Note {	
+// 	int32	user_id	= 1;
+// 	string Text = "";
+// }
+// 
+// type NewNoteInput struct {
+// 	AuthorId	string	`json:"user_id"`
+// 	Text		string	`json:"text"`
+// }
