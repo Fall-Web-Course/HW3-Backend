@@ -33,7 +33,7 @@ func GetNote(c *gin.Context) {
 		panic(err)
 	}
 	var text string
-	if text := value.GetValue(); text == "-1" {
+	if text = value.GetValue(); text == "-1" {
 		// alert user
 		text = GetNoteByid(note_id).Text
 		go cache.SetKey(note_id, text)
