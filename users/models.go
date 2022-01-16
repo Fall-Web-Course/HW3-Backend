@@ -16,3 +16,9 @@ func InsertToDb(user User) *gorm.DB {
 	err := db.GetDb().Create(&user)
 	return err
 }
+
+func GetUserByid(user_id string) User {
+	var user User
+	db.GetDb().Find(&user, user_id)
+	return user
+}
