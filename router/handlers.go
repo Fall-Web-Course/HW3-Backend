@@ -16,9 +16,9 @@ func InitRouter() {
 	router := gin.Default();
 
 	router.POST("/notes/new", notes.NewNote);
-	router.GET("/notes", notes.GetNote); // /note_id
-	router.PUT("/notes", notes.UpdateNote); // /note_id
-	router.DELETE("/notes", notes.DeleteNote); // /note_id
+	router.GET("/notes/:note_id", notes.GetNote);
+	router.PUT("/notes/:note_id", notes.UpdateNote); // /note_id
+	router.DELETE("/notes/:note_id", notes.DeleteNote); // /note_id
 	
 	router.POST("/users/register", users.Register);	
 	router.POST("/users/login", users.Login);	
