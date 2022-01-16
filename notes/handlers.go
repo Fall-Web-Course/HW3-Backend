@@ -3,6 +3,7 @@ package notes
 import (
 	"net/http"
 
+	cache "github.com/Fall-Web-Course/HW3/cache"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,8 +25,14 @@ func NewNote(c *gin.Context) {
 }
 
 func GetNote(c *gin.Context) {
+	note_id := c.Param("note_id")
+	value, err := cache.GetKey(note_id)
+	if err != nil {
+		panic(err)
+	}
+
 	c.JSON(200, gin.H{
-		"message": "get_note",
+		"Text": value,
 	})
 }
 
