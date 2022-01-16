@@ -20,6 +20,7 @@ func NewNote(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"Message": "Something went wrong",
 		})
+		return
 	}
 	c.JSON(http.StatusCreated, gin.H {
 		"Message": "Note created",
@@ -30,12 +31,17 @@ func GetNote(c *gin.Context) {
 	note_id := c.Param("note_id")
 	value, err := cache.GetKey(note_id)
 	if err != nil {
-		panic(err)
+		c.JSON(200, gin.H{
+			"Message": "Something went wrong",
+		})
+		return
 	}
 	var text string
 	if text = value.GetValue(); text == "-1" {
-		// alert user
-		text = GetNoteByid(note_id).Text
+		c.JSON(200, gin.H{
+			"Message": "Miss cache\n",
+		})
+		text = GetNoteById(note_id).Text
 		go cache.SetKey(note_id, text)
 	}
 
@@ -45,8 +51,15 @@ func GetNote(c *gin.Context) {
 }
 
 func UpdateNote(c *gin.Context) {
+	var note NewNoteInput
+	c.BindJSON(&note)
+
+	note_id := c.Param("note_id")
+	go cache.SetKey(note_id, note.Text)
+	go UpdateNoteById(note_id, note.Text)
+
 	c.JSON(200, gin.H{
-		"message": "update_note",
+		"message": "Note updated",
 	})
 }
 
