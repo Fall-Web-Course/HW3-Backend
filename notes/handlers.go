@@ -3,8 +3,10 @@ package notes
 import (
 	"net/http"
 
-	cache "github.com/Fall-Web-Course/HW3/cache"
 	"github.com/gin-gonic/gin"
+	
+	cache "github.com/Fall-Web-Course/HW3/cache"
+	users "github.com/Fall-Web-Course/HW3/users"
 )
 
 
@@ -12,7 +14,7 @@ func NewNote(c *gin.Context) {
 	var new_note NewNoteInput
 	c.BindJSON(&new_note)
 
-	user := GetUserByid(new_note.AuthorId)
+	user := users.GetUserByid(new_note.AuthorId)
 	err := InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
 	if (err != nil) {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -30,9 +32,15 @@ func GetNote(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
+	var text string
+	if text := value.GetValue(); text == "-1" {
+		// alert user
+		text = GetNoteByid(note_id).Text
+		go cache.SetKey(note_id, text)
+	}
 
 	c.JSON(200, gin.H{
-		"Text": value,
+		"Text": text,
 	})
 }
 
