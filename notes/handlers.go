@@ -16,9 +16,10 @@ func NewNote(c *gin.Context) {
 
 	user := users.GetUserByid(new_note.AuthorId)
 	err := InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
-	if (err != nil) {
+	if (err.Error != nil) {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"Message": "Something went wrong",
+			"ErrorMesssage": err.Error,
 		})
 		return
 	}
