@@ -1,6 +1,7 @@
 package users
 
-import (	
+import (
+	"github.com/Fall-Web-Course/HW3/db"
 	"github.com/gin-gonic/gin"
 
 	"errors"
@@ -16,7 +17,9 @@ var userList = []User{
 }
 
 func isUserValid(username, password string) bool {
-	for _, u := range userList {
+	var users []User
+	db.GetDb().Find(&users)
+	for _, u := range users {
 		if u.Username == username && u.Password == password {
 			// TODO: change
 			return true
@@ -97,10 +100,11 @@ func Register(c *gin.Context) {
 
 	if _, err := registerNewUser(new_user.Username, new_user.Password); err == nil {
 		out := InsertToDb(new_user)
-		if out != nil {
+		if out.Error != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"Message":   "Registration Failed",
 				"ErrorMessage": "Duplicate username"})
+			return
 		}
 		// If the user is created, set the token in a cookie and log the user in
 		token := generateSessionToken()
@@ -109,7 +113,7 @@ func Register(c *gin.Context) {
 		c.Set("is_logged_in", true)
 
 		c.JSON(http.StatusCreated, gin.H{
-			"Message": "Successful registration & Login"})
+			"Message": "Successful registration and Login"})
 
 	} else {
 		// If the username/password combination is invalid,
