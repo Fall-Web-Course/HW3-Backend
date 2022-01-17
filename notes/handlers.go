@@ -40,8 +40,8 @@ func GetNote(c *gin.Context) {
 	}
 	var text string
 	if text = value.GetValue(); text == "-1" {
-		c.JSON(200, gin.H{
-			"Message": "Miss cache\n",
+		c.JSON(http.StatusNotFound, gin.H{
+			"Message": "Miss cache",
 		})
 		text = GetNoteById(note_id).Text
 		go cache.SetKey(note_id, text)
