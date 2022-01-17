@@ -2,14 +2,15 @@ package notes
 
 import (
 	"fmt"
-	"strings"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	cache "github.com/Fall-Web-Course/HW3/cache"
-	users "github.com/Fall-Web-Course/HW3/users"
 	db "github.com/Fall-Web-Course/HW3/db"
+	users "github.com/Fall-Web-Course/HW3/users"
 )
 
 func NewNote(c *gin.Context) {
@@ -17,14 +18,15 @@ func NewNote(c *gin.Context) {
 	c.BindJSON(&new_note)
 
 	user := users.GetUserByid(new_note.AuthorId)
-	err := InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
-	if err.Error != nil {
+	res, id := InsertToDb(Note{Text: new_note.Text, User: user, UserUsername: new_note.AuthorId})
+	if res.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"Message":       "Something went wrong",
-			"ErrorMesssage": err.Error,
+			"ErrorMesssage": res.Error,
 		})
 		return
 	}
+	updateUserNotes(new_note.AuthorId, strconv.FormatUint(uint64(id), 10))
 	c.JSON(http.StatusCreated, gin.H{
 		"Message": "Note created",
 	})
@@ -35,13 +37,16 @@ func GetNote(c *gin.Context) {
 	var user_id string = "1"
 	note_id := c.Param("note_id")
 	value, _ := cache.GetKey(user_id)
-	if user_notes := value.GetValue(); user_notes != "-1" {
-		if ! strings.Contains(user_notes, note_id) {
-			c.JSON(http.StatusForbidden, gin.H{
-				"Message": "Access denied",
-			})
-			return
-		}
+	user_notes := value.GetValue(); 
+	if user_notes == "-1" {
+		user_notes = GetUserNotesById(user_id)
+		go cache.SetKey(fmt.Sprintf("u%s", user_id), user_notes)
+	}
+	if ! strings.Contains(user_notes, note_id) {
+		c.JSON(http.StatusForbidden, gin.H{
+			"Message": "Access denied",
+		})
+		return
 	}
 	value, err := cache.GetKey(note_id)
 	if err != nil {
