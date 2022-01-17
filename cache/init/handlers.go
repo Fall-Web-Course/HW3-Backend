@@ -1,15 +1,23 @@
 package init
 
 import (
+	"fmt"
+
+	cache "github.com/Fall-Web-Course/HW3/cache"
 	proto "github.com/Fall-Web-Course/HW3/proto"
-	grpc "google.golang.org/grpc"
+	utils "github.com/Fall-Web-Course/HW3/utils"
+
+	"google.golang.org/grpc"
 )
 
-func ConnectToCache(address string) proto.CacherClient {
-	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+func InitCache() {
+	CACHE_ADDRESS := utils.Getenv("CACHE_ADDRESS", "127.0.0.1")
+	CACHE_PORT := utils.Getenv("CACHE_PORT", "50051")
+
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%s", CACHE_ADDRESS, CACHE_PORT), grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		panic(err)
 	}
 	client := proto.NewCacherClient(conn)
-	return client
+	cache.SetCacheClient(client)
 }

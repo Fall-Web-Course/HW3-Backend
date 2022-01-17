@@ -5,15 +5,17 @@ import (
 	"strconv"
 	"time"
 
-	init_cache "github.com/Fall-Web-Course/HW3/cache/init"
 	proto "github.com/Fall-Web-Course/HW3/proto"
 )
 
-
-var client = init_cache.ConnectToCache("localhost:50051")
+var client proto.CacherClient
 
 func GetCacheClient() proto.CacherClient {
 	return client
+}
+
+func SetCacheClient(cacher_client proto.CacherClient) {
+	client = cacher_client
 }
 
 func SetKey(key string, value string) (*proto.KeyPair, error) {
@@ -24,10 +26,10 @@ func SetKey(key string, value string) (*proto.KeyPair, error) {
 	return r, err
 }
 
-func GetKey(key string) (*proto.Value, error) {
+func GetKey(key string) (r *proto.Value, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	int_key, _ := strconv.ParseInt(key, 10, 64)
-	r, err := client.GetKey(ctx, &proto.Key{Key: int_key})
+	r, err = client.GetKey(ctx, &proto.Key{Key: int_key})
 	return r, err
 }
