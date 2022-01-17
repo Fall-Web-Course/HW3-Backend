@@ -2,9 +2,9 @@ package notes
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 	
+	"github.com/gin-gonic/gin"
+
 	cache "github.com/Fall-Web-Course/HW3/cache"
 	users "github.com/Fall-Web-Course/HW3/users"
 )
