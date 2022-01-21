@@ -1,6 +1,8 @@
 package authorization
 
 import (
+	cache "github.com/Fall-Web-Course/HW3/cache"
+
 	"crypto/hmac"
 	"crypto/sha256"
 	b64 "encoding/base64"
@@ -103,18 +105,21 @@ func VerifySignature(token string) bool {
 		return false
 	}
 
-	payload_binary, err := extractTokenSection(sections, 1)
+	payload_data, err := extractTokenSection(sections, 1)
 	if err != nil {
 		fmt.Print(err)
 		return false
 	}
 
 	var secret string
-	if payload_binary["typ"] == "access" {
+	var id string
+	if payload_data["typ"] == "access" {
 		secret = os.Getenv("ACCESS_SECRET")
+		id = "access" + payload_data["id"]
 
-	} else if payload_binary["typ"] == "refresh" {
+	} else if payload_data["typ"] == "refresh" {
 		secret = os.Getenv("REFRESH_SECRET")
+		id = "refresh" + payload_data["id"]
 
 	} else {
 		return false
@@ -126,5 +131,25 @@ func VerifySignature(token string) bool {
 
 	crypto_f.Write([]byte(encoded))
 
-	return hex.EncodeToString(crypto_f.Sum(nil)) == sections[2]
+	if hex.EncodeToString(crypto_f.Sum(nil)) == sections[2] {
+		if _, err = cache.GetKey("access" + id); err != nil {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func GetUserID(token string) (string, error) {
+	sections := strings.Split(token, ".")
+
+	payload_data, err := extractTokenSection(sections, 1)
+	if err != nil {
+		fmt.Print(err)
+		return "0", err
+	}
+
+	id := payload_data["id"]
+
+	return id, nil
 }
