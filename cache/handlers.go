@@ -33,3 +33,11 @@ func GetKey(key string) (r *proto.Value, err error) {
 	r, err = client.GetKey(ctx, &proto.Key{Key: int_key})
 	return r, err
 }
+
+func SetKeyWithDeadline(key string, value string, dead_line time.Time) (*proto.KeyPair, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), dead_line)
+	defer cancel()
+	int_key, _ := strconv.ParseInt(key, 10, 64)
+	r, err := client.SetKey(ctx, &proto.KeyPair{Key: int_key, Value: value})
+	return r, err
+}

@@ -1,7 +1,10 @@
 package users
 
 import (
+	"time"
+
 	jwt "github.com/Fall-Web-Course/HW3/authorization"
+	cache "github.com/Fall-Web-Course/HW3/cache"
 	"github.com/Fall-Web-Course/HW3/db"
 	"github.com/gin-gonic/gin"
 
@@ -75,6 +78,16 @@ func Login(c *gin.Context) {
 		c.SetSameSite(sameSiteCookie)
 		c.Set("is_logged_in", true)
 
+		cache.SetKeyWithDeadline(
+			"access"+strconv.FormatUint(uint64(found_user.ID), 10),
+			jwt_token.AccessToken,
+			time.Unix(jwt_token.AccessExpire, 0))
+
+		cache.SetKeyWithDeadline(
+			"refresh"+strconv.FormatUint(uint64(found_user.ID), 10),
+			jwt_token.RefreshToken,
+			time.Unix(jwt_token.RefreshExpire, 0))
+
 		c.JSON(http.StatusOK, gin.H{
 			"title":         "Successful Login",
 			"access_token":  jwt_token.AccessToken,
@@ -109,7 +122,7 @@ func Register(c *gin.Context) {
 
 	var sameSiteCookie http.SameSite
 
-	if _, err := registerNewUser(new_user.Username, new_user.Password); err == nil {
+	if registered_user, err := registerNewUser(new_user.Username, new_user.Password); err == nil {
 		out := InsertToDb(new_user)
 		if out.Error != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -119,12 +132,32 @@ func Register(c *gin.Context) {
 		}
 		// If the user is created, set the token in a cookie and log the user in
 		token := generateSessionToken()
+		jwt_token, err := jwt.GenerateToken((uint64(registered_user.ID)), registered_user.Username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Message":      "Login Failed",
+				"ErrorMessage": "Can not generate token."})
+		}
+
 		c.SetCookie("token", token, 3600, "/", "", false, true)
 		c.SetSameSite(sameSiteCookie)
 		c.Set("is_logged_in", true)
 
-		c.JSON(http.StatusCreated, gin.H{
-			"Message": "Successful registration and Login"})
+		cache.SetKeyWithDeadline(
+			"access"+strconv.FormatUint(uint64(registered_user.ID), 10),
+			jwt_token.AccessToken,
+			time.Unix(jwt_token.AccessExpire, 0))
+
+		cache.SetKeyWithDeadline(
+			"refresh"+strconv.FormatUint(uint64(registered_user.ID), 10),
+			jwt_token.RefreshToken,
+			time.Unix(jwt_token.RefreshExpire, 0))
+
+		c.JSON(http.StatusOK, gin.H{
+			"title":         "Successful registration and Login",
+			"access_token":  jwt_token.AccessToken,
+			"refresh_token": jwt_token.RefreshToken,
+		})
 
 	} else {
 		// If the username/password combination is invalid,

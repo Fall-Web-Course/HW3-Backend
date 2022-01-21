@@ -6,6 +6,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"hash"
 	"os"
 	"strconv"
@@ -84,7 +85,7 @@ func extractTokenSection(token_sections []string, section int) (map[string]strin
 	}
 
 	var data map[string]string = make(map[string]string)
-	if err := json.Unmarshal(binary, data); err != nil {
+	if err := json.Unmarshal(binary, &data); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -95,7 +96,6 @@ func VerifySignature(token string) bool {
 
 	header_data, err := extractTokenSection(sections, 0)
 	if err != nil {
-		print(err)
 		return false
 	}
 
@@ -105,7 +105,7 @@ func VerifySignature(token string) bool {
 
 	payload_binary, err := extractTokenSection(sections, 1)
 	if err != nil {
-		print(err)
+		fmt.Print(err)
 		return false
 	}
 

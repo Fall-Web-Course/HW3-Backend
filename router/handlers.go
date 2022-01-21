@@ -19,6 +19,7 @@ func InitRouter() {
 	router := gin.Default()
 
 	router.Use(middlewares.RateLimit)
+	router.Use(middlewares.JWTAuth)
 
 	router.POST("/notes/new", notes.NewNote)
 	router.GET("/notes/:note_id", notes.GetNote)
