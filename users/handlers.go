@@ -1,8 +1,6 @@
 package users
 
 import (
-	"fmt"
-
 	jwt "github.com/Fall-Web-Course/HW3/authorization"
 	"github.com/Fall-Web-Course/HW3/db"
 	"github.com/gin-gonic/gin"
@@ -65,9 +63,13 @@ func Login(c *gin.Context) {
 	// Check if the username/password combination is valid
 	if valid, found_user := isUserValid(user.Username, user.Password); valid {
 		// If the username/password is valid set the token in a cookie
-		fmt.Print(found_user.ID, found_user.Username, found_user.Password)
 		token := generateSessionToken()
-		jwt_token, _ := jwt.GenerateToken((uint64(found_user.ID)), found_user.Username)
+		jwt_token, err := jwt.GenerateToken((uint64(found_user.ID)), found_user.Username)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"Message":      "Login Failed",
+				"ErrorMessage": "Can not generate token."})
+		}
 
 		c.SetCookie("token", token, 3600, "/", "localhost", false, true)
 		c.SetSameSite(sameSiteCookie)
