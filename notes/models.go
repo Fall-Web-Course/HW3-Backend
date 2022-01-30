@@ -10,14 +10,14 @@ import (
 
 type Note struct {
 	gorm.Model
-	UserUsername	string
-	User			users.User	`gorm:"references:Username"`
-	Text			string
+	UserUsername string
+	User         users.User `gorm:"references:Username"`
+	Text         string
 }
 
 type NewNoteInput struct {
-	AuthorId	string	`json:"user_id"`
-	Text		string	`json:"text"`
+	AuthorId string `json:"user_id"`
+	Text     string `json:"text"`
 }
 
 func InsertToDb(note Note) (*gorm.DB, uint) {
@@ -45,7 +45,7 @@ func GetUserNotesById(user_id string) (res string) {
 	len_notes := len(notes)
 	for i := 0; i < len_notes; i++ {
 		res += strconv.FormatUint(uint64(notes[i].ID), 10)
-		if i != len_notes - 1 {
+		if i != len_notes-1 {
 			res += " "
 		}
 	}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	jwt "github.com/Fall-Web-Course/HW3/authorization"
 	cache "github.com/Fall-Web-Course/HW3/cache"
 	db "github.com/Fall-Web-Course/HW3/db"
 	users "github.com/Fall-Web-Course/HW3/users"
@@ -33,16 +34,34 @@ func NewNote(c *gin.Context) {
 }
 
 func GetNote(c *gin.Context) {
-	// TODO: get user_id from jwt
-	var user_id string = "1"
+	ibearToken := c.Request.Header.Get("Authorization")
+	str_split := strings.Split(ibearToken, " ")
+	var user_id string
+	var errs error
+	if len(str_split) == 2 {
+		user_id, errs = jwt.GetUserID(str_split[1])
+		if errs != nil {
+			c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+				"Message": "Authentication token not provided.",
+			})
+			return
+		}
+	} else {
+		c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+			"Message": "Authentication token not provided.",
+		})
+		return
+	}
+
+	fmt.Print(user_id)
 	note_id := c.Param("note_id")
 	value, _ := cache.GetKey(user_id)
-	user_notes := value.GetValue(); 
+	user_notes := value.GetValue()
 	if user_notes == "-1" {
 		user_notes = GetUserNotesById(user_id)
 		go cache.SetKey(fmt.Sprintf("u%s", user_id), user_notes)
 	}
-	if ! strings.Contains(user_notes, note_id) {
+	if !strings.Contains(user_notes, note_id) {
 		c.JSON(http.StatusForbidden, gin.H{
 			"Message": "Access denied",
 		})
@@ -64,7 +83,7 @@ func GetNote(c *gin.Context) {
 		go cache.SetKey(note_id, text)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"Text": text, })
+	c.JSON(http.StatusOK, gin.H{"Text": text})
 }
 
 func UpdateNote(c *gin.Context) {
