@@ -40,7 +40,7 @@ func UpdateNoteById(note_id string, text string) {
 func GetUserNotesById(user_id string) (res string) {
 	var notes []Note
 	user := users.GetUserByid(user_id)
-	db.GetDb().Where("User = ?", user).Find(&notes)
+	db.GetDb().Where("user_username = ?", user.Username).Find(&notes)
 
 	len_notes := len(notes)
 	for i := 0; i < len_notes; i++ {
